@@ -96,49 +96,69 @@ int main(int argc, char *argv[]) {
       sprintf(filename,"%s/%s-conv%d-kernels.npy",model_dir,basename,layer);
 
       if (iftFileExists(filename)){ /* encode layer using its kernels */
-	iftMatrix *K     = iftReadMatrix(filename);	       
-	sprintf(filename,"%s/%s-conv%d",model_dir,basename,layer);
-	float     *bias  = LoadBias(filename);
-	iftAdjRel *A     = GetPatchAdjacency(mimg, arch->layer[layer-1]);
+        iftMatrix *K     = iftReadMatrix(filename);	       
+        sprintf(filename,"%s/%s-conv%d",model_dir,basename,layer);
+        float     *bias  = LoadBias(filename);
+        iftAdjRel *A     = GetPatchAdjacency(mimg, arch->layer[layer-1]);
 	
-	/* Complete the code below to compute convolution with a kernel
-	   bank followed by bias */
+        /* Complete the code below to compute convolution with a kernel
+          bank followed by bias */
 
+        // using matrix multiplication to do the convolution
+        iftMatrix *XI = iftMImageToFeatureMatrix(mimg,A,NULL);
+        iftMatrix *XJ = iftMultMatrices(XI, K);
+        iftDestroyMatrix(&XI);
+
+        // add bias
+
+        iftComputeAdditionBetweenMatrixScalar(XJ, bias, 'f')
+        
+        iftMImage *activ = iftMatrixToMImage(XJ, mimg->xsize, mimg->ysize, mimg->zsize, ??? (number of kernels), 'c');
+        for (int p=0; p < activ->n; p++) { /* set values near the border to zero */
+          iftVoxel u = iftMGetVoxelCoord(activ,p);
+          for (int i =1; i < A->n; i++) { 
+            iftVoxel v = iftGetAdjacentVoxel(A, u, i);
+            if (!iftMValidVoxel(activ,v)){
+              for (int b=0; b < activ->m; b++)
+                activ->val[p][b]=0;
+              }
+          }
+        }
 	
-	/* Pooling */
-	
-	if (strcmp(arch->layer[layer-1].pool_type, "no_pool") != 0){
-	  iftMImage *pool = NULL;
-	  if (strcmp(arch->layer[layer-1].pool_type, "avg_pool") == 0) {
-	    pool = iftFLIMAtrousAveragePooling(activ,
-					       arch->layer[layer-1].pool_size[0],
-					       arch->layer[layer-1].pool_size[1],
-					       arch->layer[layer-1].pool_size[2],
-					       1,
-					       arch->layer[layer-1].pool_stride);
-	    iftDestroyMImage(&activ);
-	    activ = pool;
-	  } else {
-	    if (strcmp(arch->layer[layer-1].pool_type, "max_pool") == 0) { 
-	      pool = iftFLIMAtrousMaxPooling(activ,
-					     arch->layer[layer-1].pool_size[0],
-					     arch->layer[layer-1].pool_size[1],
-					     arch->layer[layer-1].pool_size[2],
-					     1,
-					     arch->layer[layer-1].pool_stride);
-	      iftDestroyMImage(&activ);
-	      activ = pool;
-	    } else {
-	      iftError("Invalid pooling in layer %d","main",layer);
-	    }
-	  }
-	}
-	
-	sprintf(filename,"%s/%s.mimg",output_dir,basename);
-	iftWriteMImage(activ,filename);
-	iftDestroyMatrix(&K);
-	iftDestroyMImage(&activ);
-	iftFree(bias);
+        /* Pooling */
+        
+        if (strcmp(arch->layer[layer-1].pool_type, "no_pool") != 0){
+          iftMImage *pool = NULL;
+          if (strcmp(arch->layer[layer-1].pool_type, "avg_pool") == 0) {
+            pool = iftFLIMAtrousAveragePooling(activ,
+                      arch->layer[layer-1].pool_size[0],
+                      arch->layer[layer-1].pool_size[1],
+                      arch->layer[layer-1].pool_size[2],
+                      1,
+                      arch->layer[layer-1].pool_stride);
+            iftDestroyMImage(&activ);
+            activ = pool;
+          } else {
+            if (strcmp(arch->layer[layer-1].pool_type, "max_pool") == 0) { 
+              pool = iftFLIMAtrousMaxPooling(activ,
+                    arch->layer[layer-1].pool_size[0],
+                    arch->layer[layer-1].pool_size[1],
+                    arch->layer[layer-1].pool_size[2],
+                    1,
+                    arch->layer[layer-1].pool_stride);
+              iftDestroyMImage(&activ);
+              activ = pool;
+            } else {
+              iftError("Invalid pooling in layer %d","main",layer);
+            }
+          }
+        }
+        
+        sprintf(filename,"%s/%s.mimg",output_dir,basename);
+        iftWriteMImage(activ,filename);
+        iftDestroyMatrix(&K);
+        iftDestroyMImage(&activ);
+        iftFree(bias);
       }
       
       iftFree(basename);
