@@ -110,20 +110,13 @@ int main(int argc, char *argv[]) {
         iftDestroyMatrix(&XI);
 
         // add bias
-
-        iftComputeAdditionBetweenMatrixScalar(XJ, bias, 'f')
-        
-        iftMImage *activ = iftMatrixToMImage(XJ, mimg->xsize, mimg->ysize, mimg->zsize, ??? (number of kernels), 'c');
-        for (int p=0; p < activ->n; p++) { /* set values near the border to zero */
-          iftVoxel u = iftMGetVoxelCoord(activ,p);
-          for (int i =1; i < A->n; i++) { 
-            iftVoxel v = iftGetAdjacentVoxel(A, u, i);
-            if (!iftMValidVoxel(activ,v)){
-              for (int b=0; b < activ->m; b++)
-                activ->val[p][b]=0;
-              }
-          }
+        if (arch->layer[layer-1].relu){
+          iftComputeAdditionBetweenMatrixScalar(XJ, bias, 'f')
         }
+
+        iftMImage *activ = iftMatrixToMImage(XJ, mimg->xsize, mimg->ysize, mimg->zsize, K->ncols, 'c');
+        iftDestroyMatrix(&XJ);
+        iftDestroyMatrix(&A);
 	
         /* Pooling */
         
