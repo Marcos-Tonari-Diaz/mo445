@@ -109,15 +109,22 @@ int main(int argc, char *argv[]) {
         iftMatrix *XJ = iftMultMatrices(XI, K);
         iftDestroyMatrix(&XI);
 
-        // add bias
-        if (arch->layer[layer-1].relu){
-          iftComputeAdditionBetweenMatrixScalar(XJ, bias, 'f')
-        }
-
         iftMImage *activ = iftMatrixToMImage(XJ, mimg->xsize, mimg->ysize, mimg->zsize, K->ncols, 'c');
         iftDestroyMatrix(&XJ);
-        iftDestroyMatrix(&A);
-	
+        iftDestroyAdjRel(&A);
+
+        // add bias
+        for (int c = 0; c < activ->n; c++){
+          for (int r = 0; r < activ->m; r++){
+            // relu
+            if (activ->val[c][r] < 0 && arch->layer[layer-1].relu){
+              activ->val[c][r] = 0;
+              continue;
+            }
+            activ->val[c][r] += bias[r];
+          }
+        }
+
         /* Pooling */
         
         if (strcmp(arch->layer[layer-1].pool_type, "no_pool") != 0){
