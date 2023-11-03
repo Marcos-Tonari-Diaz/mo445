@@ -32,8 +32,11 @@ for layer in range(1,nlayers+1):
         os.system(line)
         os.system(extract_line)
 
-# line = "decode_layer {} arch.json flim {} salie".format(target_layer, model_type)
-# os.system(line)
+line = "decode_layer {} arch.json flim {} salie".format(target_layer, model_type)
+extract_line = "extract layer{}".format(target_layer)
+os.system(line)
+os.system(extract_line)
+
 # line = "detection salie {} boxes".format(target_layer)
 # os.system(line)
 # line = "delineation salie {} objs".format(target_layer)

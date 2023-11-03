@@ -158,20 +158,20 @@ int main(int argc, char *argv[])
       iftImage *interp_map = NULL;
 
       if (argc == 7){
-	if (iftIs3DMImage(mimg)){
-	  sprintf(filename,"%s/%s.nii.gz",roi_dir,basename);
-	}else{
-	  sprintf(filename,"%s/%s.png",roi_dir,basename);
-	}
-	mask = iftReadImageByExt(filename);
+	      if (iftIs3DMImage(mimg)){
+	        sprintf(filename,"%s/%s.nii.gz",roi_dir,basename);
+	      }else{
+	        sprintf(filename,"%s/%s.png",roi_dir,basename);
+	      } 
+	      mask = iftReadImageByExt(filename);
       }
 
       if (iftIs3DMImage(mimg)){
-	interp_map = iftInterp(salie_map,scale[0],scale[1],scale[2]);
-	sprintf(filename,"%s/%s_layer%d.nii.gz",output_dir,basename,layer);
+	      interp_map = iftInterp(salie_map,scale[0],scale[1],scale[2]);
+	      sprintf(filename,"%s/%s_layer%d.nii.gz",output_dir,basename,layer);
       }else{
-	interp_map = iftInterp2D(salie_map,scale[0],scale[1]);	  
-	sprintf(filename,"%s/%s_layer%d.png",output_dir,basename,layer);
+	      interp_map = iftInterp2D(salie_map,scale[0],scale[1]);	  
+	      sprintf(filename,"%s/%s_layer%d.png",output_dir,basename,layer);
       }
       
       /* post-process and save the salience map */
