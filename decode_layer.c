@@ -51,14 +51,26 @@ iftAdjRel *GetDiskAdjacency(iftImage *img, iftFLIMLayer layer)
 
 /* Complete the code below to compute adaptive kernel weights */
 
+// 1 weight per kernel
+// calculating the mean fo the activation is used as a measure of how "background selecting" or "foreground selecting" a kernel is
 float *AdaptiveWeights(iftMImage *mimg, float perc_thres)
 {
   float *weight     = iftAllocFloatArray(mimg->m);
 
   for (int b=0; b < mimg->m; b++){
-
-
-
+    // calculate the mean of each activation layer (m)
+    float mean = 0;
+    for (int pix = 0; pix < mimg->n; pix++){
+      mean += mimg->val[pix][b];
+    }
+    mean /= mimg->n;
+    // if mean < thres -> b = -1; else b = 1
+    if (mean < 0.5){
+      b = 1;
+    }
+    else{
+      b = 0;
+    }
   }
 
   return(weight);
@@ -118,19 +130,19 @@ int main(int argc, char *argv[])
     
     float *weight=NULL;
     if (model_type==0){
-	sprintf(filename,"%s/%s-conv%d-weights.txt",
-		model_dir,basename,layer);
+	    sprintf(filename,"%s/%s-conv%d-weights.txt",
+		  model_dir,basename,layer);
       if (iftFileExists(filename)){ 	
-	weight = LoadKernelWeights(filename);
+	      weight = LoadKernelWeights(filename);
       }
     }else{
       sprintf(filename,"%s/conv%d-weights.txt",model_dir,layer);
       if (model_type==1){
-	if (iftFileExists(filename)){ 	
-	  weight = LoadKernelWeights(filename);
-	}
+	      if (iftFileExists(filename)){ 	
+	        weight = LoadKernelWeights(filename);
+	      }
       } else {
-	weight = AdaptiveWeights(mimg, 0.10); 
+	      weight = AdaptiveWeights(mimg, 0.10); 
       }	
     }
     
