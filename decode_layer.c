@@ -65,12 +65,7 @@ float *AdaptiveWeights(iftMImage *mimg, float perc_thres)
     }
     mean /= mimg->n;
     // if mean < thres -> b = -1; else b = 1
-    if (mean < 0.5){
-      b = 1;
-    }
-    else{
-      b = 0;
-    }
+    weight[b] = mean < 0.5 ? 1.0 : -1.0;
   }
 
   return(weight);
