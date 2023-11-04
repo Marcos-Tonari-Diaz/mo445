@@ -71,6 +71,50 @@ float *AdaptiveWeights(iftMImage *mimg, float perc_thres)
   return(weight);
 }
 
+iftAdjRel *GetPatchAdjacency(iftMImage *mimg, iftFLIMLayer layer)
+{
+  iftAdjRel *A;
+
+  if (iftIs3DMImage(mimg)){
+    A = iftCuboidWithDilationForConv(layer.kernel_size[0],
+				     layer.kernel_size[1],
+				     layer.kernel_size[2],
+				     layer.dilation_rate[0],
+				     layer.dilation_rate[1],
+				     layer.dilation_rate[2]);
+  }else{
+    A = iftRectangularWithDilationForConv(layer.kernel_size[0],
+					  layer.kernel_size[1],
+					  layer.dilation_rate[0],
+					  layer.dilation_rate[1]);    
+  }
+
+  return(A);
+}
+
+// Remove the 0's on the border to avoid false positives
+void EliminatePadding(iftMImage *mimg, iftAdjRel *Adj)
+{
+  int p, i, b;
+
+  for(p = 0; p < mimg->n; p++)
+  {
+    iftVoxel u = iftMGetVoxelCoord(mimg, p);
+    for(i = 1; i  < Adj->n; i++)
+    {
+      iftVoxel v = iftGetAdjacentVoxel(Adj, u, i);
+      if (!iftMValidVoxel(mimg, v))
+      {
+        for(b = 0; b < mimg->m; b++)
+        {
+          mimg->val[p][b] = 0.0;
+        }
+        break; // I'm not sure if this works or not, but i think is more efficient
+      }
+    }    
+  }
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -137,6 +181,9 @@ int main(int argc, char *argv[])
 	        weight = LoadKernelWeights(filename);
 	      }
       } else {
+        // Remove the frame activation in some cases
+        iftAdjRel *Adj = GetPatchAdjacency(mimg, arch->layer[layer-1]);
+        EliminatePadding(mimg, Adj);
 	      weight = AdaptiveWeights(mimg, 0.10); 
       }	
     }
