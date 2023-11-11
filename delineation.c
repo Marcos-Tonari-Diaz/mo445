@@ -15,6 +15,101 @@ iftImage *DynamicTrees(iftImage *orig, iftImage *seeds_in, iftImage *seeds_out)
   iftMImage  *mimg     = iftImageToMImage(orig,LAB_CSPACE);
   iftImage   *pathval  = NULL, *label = NULL, *root = NULL;
 
+  float *treeL = NULL;
+  float *treeA = NULL;
+  float *treeB=  NULL;
+  int *nNodes = NULL;
+
+  int Imax = iftRound(sqrtf(3.0)*iftMax(iftMax(iftMMaximumValue(mimg, 0),
+                                               iftMMaximumValue(mimg, 1)), 
+                                               iftMMaximumValue(mimg, 2)));
+
+  iftGQueue   *pQ   = NULL; // fila de prioridade 
+  iftAdjRel   *Adj    = iftCircular(1.0); // adjacência 
+  int          i, p, q, r, tmp;
+  iftVoxel     u, v;
+
+  // Inicialização 
+
+  pathval = iftCreateImage(orig->xsize, orig->ysize, orig->zsize);
+  label = iftCreateImage(orig->xsize, orig->ysize, orig->zsize);
+  root = iftCreateImage(orig->xsize, orig->ysize, orig->zsize);
+
+  treeL = iftAllocFloatArray(orig -> n);
+  treeA = iftAllocFloatArray(orig -> n);
+  treeB = iftAllocFloatArray(orig -> n);
+  nNodes = iftAllocIntArray(orig->n);
+  pQ = iftCreateGQueue(Imax+1, orig->n, pathval->val);
+
+  for(p = 0; p < orig->n; p++)
+  {
+    pathval->val[p] = IFT_INFINITY_INT;
+    if(seeds_in->val[p] != 0){
+      root->val[p] = p;
+      label->val[p] = seeds_in->val[p];
+      pathval->val[p] = 0;
+    }
+    else{
+      if(seeds_out->val[p] != 0){
+        root->val[p] = p;
+        label->val[p] = 0;
+        pathval->val[p] = 0;
+      }
+    }
+    iftInsertGQueue(&pQ, p);
+  }
+
+  // Transformação em floresta 
+
+  while(!iftEmptyGQueue(pQ))
+  {
+    // retira o node com maior prioridade, atualiza os valores dos caminhos e adiciona +1 ao número de nodes, por fim pega a coordenada do pixel
+    p = iftRemoveGQueue(pQ);
+    r = root->val[p];
+    treeL[r] += mimg->val[p][0];
+    treeA[r] += mimg->val[p][1];
+    treeB[r] += mimg->val[p][2];
+    nNodes[r] += 1;
+    u = iftGetVoxelCoord(orig, p);
+
+    for(i = 1; i < Adj->n; i++){
+      v = iftGetAdjacentVoxel(Adj, u, i);
+
+      if(iftValidVoxel(orig, v))
+      {
+        q = iftGetVoxelIndex(orig, v);
+
+        if(pQ->L.elem[q].color != IFT_BLACK){
+
+          int Wi = iftRound(sqrtf(powf((mimg->val[q][0]-treeL[r]/nNodes[r]), 2.0)) +
+                                 (powf((mimg->val[q][1]-treeA[r]/nNodes[r]), 2.0)) +
+                                 (powf((mimg->val[q][2]-treeB[r]/nNodes[r]), 2.0))
+                  );
+
+          tmp = iftMax(pathval->val[p], Wi);
+
+          if(tmp < pathval->val[q]) 
+          {
+            if(pQ->L.elem[q].color == IFT_GRAY){
+              iftRemoveGQueueElem(pQ, q);
+            }
+            label->val[q] = label->val[p];
+            root->val[q] = root->val[p];
+            pathval->val[q] = tmp;
+            iftInsertGQueue(&pQ, q);
+          }
+        }
+      }
+    }
+  }
+
+  iftDestroyAdjRel(&Adj);
+  iftDestroyGQueue(&pQ);
+  iftDestroyImage(&pathval);
+
+  /*iftFree(&treeA);
+  iftFree(&treeB);
+  iftFree(&treeL);*/
 
   return (label);
 }
