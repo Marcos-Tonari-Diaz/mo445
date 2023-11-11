@@ -88,6 +88,26 @@ int main(int argc, char *argv[]) {
 
       /* Complete the code below to compute convolution with a kernel
 	 bank followed by bias */
+           // using matrix multiplication to do the convolution
+        iftMatrix *XI = iftMImageToFeatureMatrix(mimg,A,NULL);
+        iftMatrix *XJ = iftMultMatrices(XI, Kmerged);
+        iftDestroyMatrix(&XI);
+
+        iftMImage *activ = iftMatrixToMImage(XJ, mimg->xsize, mimg->ysize, mimg->zsize, Kmerged->ncols, 'c');
+        iftDestroyMatrix(&XJ);
+        iftDestroyAdjRel(&A);
+
+        // add bias
+        for (int c = 0; c < activ->n; c++){
+          for (int r = 0; r < activ->m; r++){
+            // relu
+            if (activ->val[c][r] < 0 && arch->layer[layer-1].relu){
+              activ->val[c][r] = 0;
+              continue;
+            }
+            activ->val[c][r] += bias_merged[r];
+          }
+        }
 
       
       /* pooling */
