@@ -52,20 +52,23 @@ iftAdjRel *GetDiskAdjacency(iftImage *img, iftFLIMLayer layer)
 /* Complete the code below to compute adaptive kernel weights */
 
 // 1 weight per kernel
-// calculating the mean fo the activation is used as a measure of how "background selecting" or "foreground selecting" a kernel is
+// calculating the mean of the activation is used as a measure of how "background selecting" or "foreground selecting" a kernel is
 float *AdaptiveWeights(iftMImage *mimg, float perc_thres)
 {
   float *weight     = iftAllocFloatArray(mimg->m);
 
   for (int b=0; b < mimg->m; b++){
     // calculate the mean of each activation layer (m)
-    float mean = 0;
-    for (int pix = 0; pix < mimg->n; pix++){
-      mean += mimg->val[pix][b];
+    iftImage *filter = iftImageToImage(mig, 255, b);
+    int threshold = iftOtsu(img);
+    long foreground_count = 0;
+    for (int pix = 0; pix < filter->n; pix++){
+      if (img->val[pix]>threshold)
+        foreground_count += 1;
     }
-    mean /= mimg->n;
-    // if mean < thres -> b = -1; else b = 1
-    weight[b] = mean < 0.5 ? 1.0 : -1.0;
+    float mean_activation = ((float)foreground_count / (float)mimg->n);
+    weight[b] = mean_activation < perc_thres ? 1.0 : -1.0;
+    iftDestroyImage(&img);
   }
 
   return(weight);
