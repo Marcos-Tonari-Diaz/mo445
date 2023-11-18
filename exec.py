@@ -37,8 +37,8 @@ extract_line = "extract layer{}".format(target_layer)
 os.system(line)
 os.system(extract_line)
 
-# line = "detection salie {} boxes".format(target_layer)
-# os.system(line)
+line = "detection salie {} boxes".format(target_layer)
+os.system(line)
 # line = "delineation salie {} objs".format(target_layer)
 # os.system(line)
         
