@@ -59,16 +59,16 @@ float *AdaptiveWeights(iftMImage *mimg, float perc_thres)
 
   for (int b=0; b < mimg->m; b++){
     // calculate the mean of each activation layer (m)
-    iftImage *filter = iftImageToImage(mig, 255, b);
-    int threshold = iftOtsu(img);
+    iftImage *filter = iftMImageToImage(mimg, 255, b);
+    int threshold = iftOtsu(filter);
     long foreground_count = 0;
     for (int pix = 0; pix < filter->n; pix++){
-      if (img->val[pix]>threshold)
+      if (filter->val[pix]>threshold)
         foreground_count += 1;
     }
     float mean_activation = ((float)foreground_count / (float)mimg->n);
     weight[b] = mean_activation < perc_thres ? 1.0 : -1.0;
-    iftDestroyImage(&img);
+    iftDestroyImage(&filter);
   }
 
   return(weight);
