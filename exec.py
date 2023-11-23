@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
     
 if (len(sys.argv) != 4):
     print("python exec <P1> <P2>")
@@ -7,6 +8,19 @@ if (len(sys.argv) != 4):
     print("P2: layer for the results")
     print("P3: model_type (0, 1, 2)")
     exit()
+
+# Teste de exclusão de folders
+
+shutil.rmtree("bag")
+shutil.rmtree("boxes")
+shutil.rmtree("filtered")
+shutil.rmtree("flim")
+shutil.rmtree("salie")
+shutil.rmtree("layer0")
+shutil.rmtree("layer1")
+shutil.rmtree("layer2")
+shutil.rmtree("layer3")
+
 
 nlayers      = int(sys.argv[1])
 target_layer = int(sys.argv[2])
