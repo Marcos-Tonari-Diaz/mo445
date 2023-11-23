@@ -1,6 +1,10 @@
 import os
 import sys
 import shutil
+
+def delete_if_found(folder):
+    if os.path.isdir(folder):
+        shutil.rmtree(folder)
     
 if (len(sys.argv) != 4):
     print("python exec <P1> <P2>")
@@ -11,15 +15,15 @@ if (len(sys.argv) != 4):
 
 # Teste de exclusão de folders
 
-shutil.rmtree("bag")
-shutil.rmtree("boxes")
-shutil.rmtree("filtered")
-shutil.rmtree("flim")
-shutil.rmtree("salie")
-shutil.rmtree("layer0")
-shutil.rmtree("layer1")
-shutil.rmtree("layer2")
-shutil.rmtree("layer3")
+delete_if_found("bag")
+delete_if_found("boxes")
+delete_if_found("filtered")
+delete_if_found("flim")
+delete_if_found("salie")
+delete_if_found("layer0")
+delete_if_found("layer1")
+delete_if_found("layer2")
+delete_if_found("layer3")
 
 
 nlayers      = int(sys.argv[1])
