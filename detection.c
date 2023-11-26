@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
     iftImage *comp = iftSelectCompInAreaInterval(bin, A, 400, 4000);
     
     // save image
+    iftMakeDir("detection_comp");
     sprintf(filename,"%s/%s.png","detection_comp",basename2);
     iftWriteImageByExt(comp,filename);
 
