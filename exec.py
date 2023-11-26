@@ -2,10 +2,12 @@ import os
 import sys
 import shutil
 
+
 def delete_if_found(folder):
     if os.path.isdir(folder):
         shutil.rmtree(folder)
-    
+
+
 if (len(sys.argv) != 4):
     print("python exec <P1> <P2>")
     print("P1: number of layers (if negative, do not encode layers again)")
@@ -26,16 +28,16 @@ delete_if_found("layer2")
 delete_if_found("layer3")
 
 
-nlayers      = int(sys.argv[1])
+nlayers = int(sys.argv[1])
 target_layer = int(sys.argv[2])
-model_type   = int(sys.argv[3])
+model_type = int(sys.argv[3])
 
 os.system("preproc images 1.5 filtered")
 npts_per_marker = 1
 line = "bag_of_feature_points filtered markers {} bag".format(npts_per_marker)
 os.system(line)
 
-for layer in range(1,nlayers+1):
+for layer in range(1, nlayers+1):
     line = "create_layer_model bag arch.json {} flim".format(layer)
     extract_line = "extract layer{}".format(layer)
     os.system(line)
@@ -50,7 +52,8 @@ for layer in range(1,nlayers+1):
         os.system(line)
         os.system(extract_line)
 
-line = "decode_layer {} arch.json flim {} salie".format(target_layer, model_type)
+line = "decode_layer {} arch.json flim {} salie".format(
+    target_layer, model_type)
 extract_line = "extract layer{}".format(target_layer)
 os.system(line)
 os.system(extract_line)
@@ -59,4 +62,3 @@ line = "detection salie {} boxes".format(target_layer)
 os.system(line)
 # line = "delineation salie {} objs".format(target_layer)
 # os.system(line)
-        

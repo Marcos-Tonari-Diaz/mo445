@@ -86,7 +86,12 @@ int main(int argc, char *argv[])
 
     iftAdjRel *A   = iftCircular(1.5);
     iftImage *bin  = iftThreshold(salie,iftOtsu(salie),IFT_INFINITY_INT,255);
+    // this has the "detection results" - lets save and take a look at it
     iftImage *comp = iftSelectCompInAreaInterval(bin, A, 400, 4000);
+    
+    // save image
+    sprintf(filename,"%s/%s.png","detection_comp",basename2);
+    iftWriteImageByExt(comp,filename);
 
     RGB.val[0]     = Imax;
     RGB.val[1]     = 0;
