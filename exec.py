@@ -1,9 +1,35 @@
 import os
 import sys
 import shutil
+from PIL import Image
+import numpy as np
+import scipy
 
 
-def delete_if_found(folder):
+def calculate_mean_iou(results_arr, truelabels_arr):
+    iou_arr = []
+    for result, truelabel in zip(results_arr, truelabels_arr):
+        iou_arr.append(scipy.metrics.jaccard_score(truelabel, result))
+    return np.mean(iou_arr)
+
+
+def image_to_1darray(path):
+    image = Image.open(path)
+    image_array = np.asarray(image)
+    return image_array.ravel()
+
+
+def calculate_detection_iou():
+    results_arr = []
+    truelabels_arr = []
+    for img_file in os.listdir("detection_comp"):
+        results_arr.append(image_to_1darray(img_file))
+    for img_file in os.listdir("truelabels"):
+        truelabels_arr.append(image_to_1darray(img_file))
+    return calculate_mean_iou(results_arr, truelabels_arr)
+
+
+def delete_folder_if_found(folder):
     if os.path.isdir(folder):
         shutil.rmtree(folder)
 
@@ -17,15 +43,15 @@ if (len(sys.argv) != 4):
 
 # Teste de exclusão de folders
 
-delete_if_found("bag")
-delete_if_found("boxes")
-delete_if_found("filtered")
-delete_if_found("flim")
-delete_if_found("salie")
-delete_if_found("layer0")
-delete_if_found("layer1")
-delete_if_found("layer2")
-delete_if_found("layer3")
+delete_folder_if_found("bag")
+delete_folder_if_found("boxes")
+delete_folder_if_found("filtered")
+delete_folder_if_found("flim")
+delete_folder_if_found("salie")
+delete_folder_if_found("layer0")
+delete_folder_if_found("layer1")
+delete_folder_if_found("layer2")
+delete_folder_if_found("layer3")
 
 
 nlayers = int(sys.argv[1])
@@ -60,5 +86,8 @@ os.system(extract_line)
 
 line = "detection salie {} boxes".format(target_layer)
 os.system(line)
+mean_iou = calculate_detection_iou()
+print("detection mean IOU: {}".format(mean_iou))
+
 # line = "delineation salie {} objs".format(target_layer)
 # os.system(line)
