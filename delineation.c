@@ -292,7 +292,9 @@ int main(int argc, char *argv[])
       // this has the "delineaton results" - lets save and take a look at it
       iftImage *smooth_label = iftFastSmoothObjects(label, weight, 5);
       // save image
-      sprintf(filename,"%s/%s.png","delineation_smooth_label",basename2);
+      // save image
+      iftMakeDir("delineation_label");
+      sprintf(filename,"%s/%s.png","delineation_label",basename2);
       iftWriteImageByExt(smooth_label,filename);
 
       iftDestroyImage(&label);
