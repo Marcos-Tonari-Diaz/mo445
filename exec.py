@@ -52,6 +52,7 @@ delete_folder_if_found("layer0")
 delete_folder_if_found("layer1")
 delete_folder_if_found("layer2")
 delete_folder_if_found("layer3")
+delete_folder_if_found("layer4")
 
 
 nlayers = int(sys.argv[1])
@@ -84,12 +85,14 @@ extract_line = "extract layer{}".format(target_layer)
 os.system(line)
 os.system(extract_line)
 
-#line = "detection salie {} boxes".format(target_layer)
-#os.system(line)
-line = "delineation salie {} objs".format(target_layer)
+line = "detection salie {} boxes".format(target_layer)
 os.system(line)
-mean_iou = calculate_detection_iou()
-print("detection mean IOU: {}".format(mean_iou))
+#line = "delineation salie {} objs".format(target_layer)
+#os.system(line)
+line = "python3 iou.py"
+os.system(line)
+#mean_iou = calculate_detection_iou()
+#print("detection mean IOU: {}".format(mean_iou))
 
 # line = "delineation salie {} objs".format(target_layer)
 # os.system(line)

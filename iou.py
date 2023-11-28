@@ -2,7 +2,7 @@ import os
 import numpy as np
 from sklearn.metrics import jaccard_score
 from PIL import Image
-
+import json
 
 def calculate_mean_iou(results_arr, truelabels_arr):
     iou_arr = []
@@ -47,4 +47,13 @@ def calculate_detection_iou():
     #return calculate_mean_iou(truelabels_arr, truelabels_arr)
 
 mean_iou = calculate_detection_iou()
+
+with open('jsonAux.json', 'r') as file_json:
+    jsonAux = json.load(file_json)
+
+jsonAux['IoU'] = mean_iou
+
+with open('jsonAux.json', 'w') as file_json:
+    json.dump(jsonAux, file_json)
+
 print("detection mean IOU: {}".format(mean_iou))
