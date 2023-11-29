@@ -33,6 +33,10 @@ def duplicate_create_json():
         with open('jsonResultsLastRun.json', 'w') as file_json2:
             json.dump(jsonResults, file_json2)
 
+        jsonResults = {}
+        with open('jsonResults.json', 'w') as file_json3:
+            json.dump(jsonResults, file_json3)
+
     except:
         pass
 
@@ -146,11 +150,11 @@ for i in range(numberOfLoops):
         jsonResults = json.load(file_json2)
 
     if not jsonResults:
-        print('Entrou')
+        #print('Entrou')
         jsonResults['0'] = jsonAux
 
     else:
-        print('Entrou2')
+        #print('Entrou2')
         maxKey = max(map(int, jsonResults.keys()))
         jsonResults[f'{maxKey+1}'] = jsonAux
 
