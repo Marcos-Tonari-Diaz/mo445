@@ -35,7 +35,7 @@ def delete_folder_if_found(folder):
 
 
 if (len(sys.argv) != 4):
-    print("python exec <P1> <P2>")
+    print("python exec <P1> <P2> <P3>")
     print("P1: number of layers (if negative, do not encode layers again)")
     print("P2: layer for the results")
     print("P3: model_type (0, 1, 2)")
