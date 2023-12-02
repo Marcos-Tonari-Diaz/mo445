@@ -2,6 +2,10 @@ import os
 import sys
 import shutil
     
+def delete_folder_if_found(folder):
+    if os.path.isdir(folder):
+        shutil.rmtree(folder)
+
 if (len(sys.argv) != 4):
     print("python exec <P1> <P2>")
     print("P1: number of layers (if negative, do not encode layers again)")
@@ -11,23 +15,23 @@ if (len(sys.argv) != 4):
 
 # Teste de exclusão de folders
 
-shutil.rmtree("bag")
-shutil.rmtree("boxes")
-shutil.rmtree("filtered")
-shutil.rmtree("flim")
-shutil.rmtree("salie")
-shutil.rmtree("layer0")
-shutil.rmtree("layer1")
-shutil.rmtree("layer2")
-shutil.rmtree("layer3")
-
+delete_folder_if_found("bag")
+delete_folder_if_found("boxes")
+delete_folder_if_found("filtered")
+delete_folder_if_found("flim")
+delete_folder_if_found("salie")
+delete_folder_if_found("layer0")
+delete_folder_if_found("layer1")
+delete_folder_if_found("layer2")
+delete_folder_if_found("layer3")
+delete_folder_if_found("detection_comp")
 
 nlayers      = int(sys.argv[1])
 target_layer = int(sys.argv[2])
 model_type   = int(sys.argv[3])
 
 os.system("preproc images 1.5 filtered")
-npts_per_marker = 1
+npts_per_marker = 3
 line = "bag_of_feature_points filtered markers {} bag".format(npts_per_marker)
 os.system(line)
 
