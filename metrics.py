@@ -15,12 +15,8 @@ def calculate_mean_iou(results_arr, truelabels_arr):
     return np.mean(iou_arr)
 
 def calculate_mean_dice(results_arr, truelabels_arr):
-    dice_arr = []
-    for result, truelabel in zip(results_arr, truelabels_arr):
-        #print(result.shape)
-        #print(truelabel.shape)
-        dice_arr.append(distance.dice(truelabel, result))
-    return np.mean(dice_arr)
+    jaccard = calculate_mean_iou(results_arr, truelabels_arr)
+    return 2*jaccard / (1 + jaccard)
 
 
 def image_to_label_array(path):

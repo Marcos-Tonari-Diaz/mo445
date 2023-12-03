@@ -1,18 +1,18 @@
 import os
 import sys
 import shutil
-from metrics import calculate_detection_iou
 
 def delete_folder_if_found(folder):
     if os.path.isdir(folder):
         shutil.rmtree(folder)
 
 
-if (len(sys.argv) != 4):
+if (len(sys.argv) < 4):
     print("python exec <P1> <P2> <P3>")
     print("P1: number of layers (if negative, do not encode layers again)")
     print("P2: layer for the results")
     print("P3: model_type (0, 1, 2)")
+    print("P4: use sigmoid or not (type anything)")
     exit()
 
 # Teste de exclusão de folders
@@ -53,11 +53,9 @@ for layer in range(1, nlayers+1):
         os.system(extract_line)
     else:
         if (use_sigmoid):
-            line = "merge_layer_models arch.json {} flim sigmoid".format(layer)
+            line = "encode_merged_layer arch.json {} flim sigmoid".format(layer)
         else:
-            line = "encode_layer arch.json {} flim".format(layer)
-        os.system(line)
-        line = "encode_merged_layer arch.json {} flim".format(layer)
+            line = "encode_merged_layer arch.json {} flim".format(layer)   
         os.system(line)
         os.system(extract_line)
 

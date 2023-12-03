@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 
     /* Example: encode_layer arch.json 1 flim_models */
     
-    if (argc!=4)
+    if (argc < 4)
       iftError("Usage: encode_layer <P1> <P2> <P3>\n"
 	       "[1] architecture of the network (.json) \n"
 	       "[2] layer number (1, 2, 3) \n"
