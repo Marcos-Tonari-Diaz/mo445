@@ -1,4 +1,6 @@
 #include "ift.h"
+#include "math.h"
+#define EULER_NUMBER 2.71828
 
 /* Author: Alexandre Xavier Falcão (September, 10th 2023) 
 
@@ -73,7 +75,8 @@ int main(int argc, char *argv[]) {
       iftError("Usage: encode_layer <P1> <P2> <P3>\n"
 	       "[1] architecture of the network (.json) \n"
 	       "[2] layer number (1, 2, 3) \n"
-	       "[3] folder with the models \n",
+	       "[3] folder with the models \n"
+         "[4] whether to use sigmoid \n",
 	       "main");
 
     tstart = iftTic();
@@ -82,7 +85,8 @@ int main(int argc, char *argv[]) {
     int          layer  = atoi(argv[2]);
     char    *model_dir  = argv[3];
     char    *filename   = iftAllocCharArray(512);
-    char     input_dir[20], output_dir[20]; 
+    char     input_dir[20], output_dir[20];
+    bool     use_sigmoid = (argc == 5);
     
     sprintf(input_dir,"layer%d",layer-1);
     sprintf(output_dir,"layer%d",layer);
@@ -119,6 +123,11 @@ int main(int argc, char *argv[]) {
             // relu
             if (activ->val[c][r] < 0 && arch->layer[layer-1].relu){
               activ->val[c][r] = 0;
+              continue;
+            }
+            // sigmoid
+            if (activ->val[c][r] < 0 && use_sigmoid){
+              activ->val[c][r] = (1 / (1 + pow(EULER_NUMBER, activ->val[c][r])));
               continue;
             }
             activ->val[c][r] += bias[r];

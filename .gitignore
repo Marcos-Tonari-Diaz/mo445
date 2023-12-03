@@ -4,4 +4,6 @@
 *.pdf
 *.npy
 *.mimg
-filtered/*.png
+filtered
+detection_comp
+delineation_label
