@@ -289,7 +289,14 @@ int main(int argc, char *argv[])
       /* iftImage *label = Watershed(gradI,seeds_in,seeds_out); */
       iftImage  *label  = DynamicTrees(orig,seeds_in,seeds_out);
       iftFImage *weight = iftSmoothWeightImage(gradI, 0.5);
+      // this has the "delineaton results" - lets save and take a look at it
       iftImage *smooth_label = iftFastSmoothObjects(label, weight, 5);
+      // save image
+      // save image
+      iftMakeDir("delineation_label");
+      sprintf(filename,"%s/%s.png","delineation_label",basename2);
+      iftWriteImageByExt(smooth_label,filename);
+
       iftDestroyImage(&label);
       label = smooth_label;
       iftDestroyFImage(&weight);

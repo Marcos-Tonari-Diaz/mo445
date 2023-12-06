@@ -123,7 +123,7 @@ for number in listOfMarkers:
     with open('jsonAux.json', 'w') as file_json:
         json.dump(jsonAux, file_json)
 
-    line = "python3 iou.py"
+    line = "python3 metrics.py"
     os.system(line)
 
     with open('jsonAux.json', 'r') as file_json:
