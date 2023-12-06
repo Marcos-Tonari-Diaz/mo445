@@ -27,13 +27,14 @@ delete_folder_if_found("layer1")
 delete_folder_if_found("layer2")
 delete_folder_if_found("layer3")
 delete_folder_if_found("layer4")
-delete_folder_if_found("detetion_comp")
+delete_folder_if_found("detection_comp")
 delete_folder_if_found("delineation_label")
 
 nlayers = int(sys.argv[1])
 target_layer = int(sys.argv[2])
 model_type = int(sys.argv[3])
 use_sigmoid = len(sys.argv) == 5
+print(len(sys.argv))
 
 os.system("preproc images 1.5 filtered")
 npts_per_marker = 3
@@ -47,6 +48,7 @@ for layer in range(1, nlayers+1):
     if (model_type == 0):
         if (use_sigmoid):
             line = "encode_layer arch.json {} flim sigmoid".format(layer)
+            print("sigmoid")
         else:
             line = "encode_layer arch.json {} flim".format(layer)
         os.system(line)

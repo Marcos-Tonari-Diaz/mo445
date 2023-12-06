@@ -104,14 +104,13 @@ int main(int argc, char *argv[]) {
         // add bias
         for (int c = 0; c < activ->n; c++){
           for (int r = 0; r < activ->m; r++){
-            // relu
-            if (activ->val[c][r] < 0 && arch->layer[layer-1].relu){
-              activ->val[c][r] = 0;
-              continue;
-            }
             // sigmoid
-            if (activ->val[c][r] < 0 && use_sigmoid){
+            if (use_sigmoid){
               activ->val[c][r] = (1 / (1 + pow(EULER_NUMBER, activ->val[c][r])));
+            }
+            // relu
+            if (activ->val[c][r] < 0 && arch->layer[layer-1].relu && !use_sigmoid){
+              activ->val[c][r] = 0;
               continue;
             }
             activ->val[c][r] += bias_merged[r];

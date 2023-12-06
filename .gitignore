@@ -4,4 +4,4 @@
 *.pdf
 *.npy
 *.mimg
-filtered/*.png
+filtered

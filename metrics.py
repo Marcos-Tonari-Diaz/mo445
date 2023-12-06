@@ -9,6 +9,7 @@ import json
 def calculate_mean_iou(results_arr, truelabels_arr):
     iou_arr = []
     for result, truelabel in zip(results_arr, truelabels_arr):
+        #print("iou: " + str(jaccard_score(truelabel, result)))
         # print(result.shape)
         # print(truelabel.shape)
         # discard the case where the prediction and truelabel are both empty
@@ -44,9 +45,11 @@ def load_arrays_from_images():
     truelabels_arr = []
     results_folder = "detection_comp"
     truelabels_folder = "truelabels"
-    for img_file in os.listdir(results_folder):
+    for img_file in sorted(os.listdir(results_folder)):
+        #print(img_file)
         results_arr.append(image_to_label_array(results_folder+"/"+img_file))
-    for img_file in os.listdir(truelabels_folder):
+    for img_file in sorted(os.listdir(truelabels_folder)):
+        #print(img_file)
         truelabels_arr.append(image_to_label_array(
             truelabels_folder+"/"+img_file))
     return results_arr, truelabels_arr
