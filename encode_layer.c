@@ -123,9 +123,9 @@ int main(int argc, char *argv[]) {
             // sigmoid
             if (use_sigmoid){
               float v = activ->val[c][r];
-              constexpr float c1 = 0.03138777F;
-              constexpr float c2 = 0.276281267F;
-              constexpr float c_log2f = 1.442695022F;
+              float c1 = 0.03138777F;
+              float c2 = 0.276281267F;
+              float c_log2f = 1.442695022F;
               v *= c_log2f*0.5;
               int intPart = (int)v;
               float x = (v - intPart);

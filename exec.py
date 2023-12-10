@@ -12,7 +12,6 @@ if (len(sys.argv) < 4):
     print("P1: number of layers (if negative, do not encode layers again)")
     print("P2: layer for the results")
     print("P3: model_type (0, 1, 2)")
-    print("P4: use sigmoid or not (type anything)")
     exit()
 
 # Teste de exclusão de folders
@@ -33,11 +32,9 @@ delete_folder_if_found("delineation_label")
 nlayers = int(sys.argv[1])
 target_layer = int(sys.argv[2])
 model_type = int(sys.argv[3])
-use_sigmoid = len(sys.argv) == 5
-print(len(sys.argv))
 
 os.system("preproc images 1.5 filtered")
-npts_per_marker = 3
+npts_per_marker = 1
 line = "bag_of_feature_points filtered markers {} bag".format(npts_per_marker)
 os.system(line)
 
@@ -46,20 +43,13 @@ for layer in range(1, nlayers+1):
     extract_line = "extract layer{}".format(layer)
     os.system(line)
     if (model_type == 0):
-        if (use_sigmoid):
-            line = "encode_layer arch.json {} flim sigmoid".format(layer)
-            print("sigmoid")
-        else:
-            line = "encode_layer arch.json {} flim".format(layer)
+        line = "encode_layer arch.json {} flim".format(layer)
         os.system(line)
         os.system(extract_line)
     else:
         line = "merge_layer_models arch.json {} flim".format(layer)
         os.system(line)
-        if (use_sigmoid):
-            line = "encode_merged_layer arch.json {} flim sigmoid".format(layer)
-        else:
-            line = "encode_merged_layer arch.json {} flim".format(layer)   
+        line = "encode_merged_layer arch.json {} flim".format(layer)   
         os.system(line)
         os.system(extract_line)
 
@@ -71,8 +61,8 @@ os.system(extract_line)
 
 line = "detection salie {} boxes".format(target_layer)
 os.system(line)
-#line = "delineation salie {} objs".format(target_layer)
-#os.system(line)
+line = "delineation salie {} objs".format(target_layer)
+os.system(line)
 line = "python3 metrics.py"
 os.system(line)
 #mean_iou = calculate_detection_iou()
